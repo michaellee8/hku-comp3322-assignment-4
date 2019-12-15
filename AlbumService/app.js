@@ -6,7 +6,8 @@ var cors = require("cors");
 var monk = require('monk');
 var cookieSession = require('cookie-session');
 const mongoose = require('mongoose');
-var bodyParser = require('body-parser')
+var bodyParser = require('body-parser');
+const fileUpload = require('express-fileupload');
 
 mongoose.connect('mongodb://localhost:27017/assignment4',
     {useNewUrlParser: true}
@@ -27,6 +28,7 @@ app.use(cookieSession({
   keys: ['key1', 'key2'],
   maxAge: 60 * 60 * 1000,
 }));
+app.use(fileUpload({}));
 app.use(cors());
 
 app.use('/', albumsRouter);

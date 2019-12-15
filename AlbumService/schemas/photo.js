@@ -4,8 +4,8 @@ let ObjectId = mongoose.Schema.Types.ObjectId;
 
 let photoSchema = new Schema({
   url: String,
-  userID: ObjectId,
-  likedBy: [ObjectId],
+  userID: String,
+  likedBy: [String],
 });
 
 module.exports = mongoose.model("Photo", photoSchema);

@@ -1,13 +1,13 @@
 var express = require('express');
 var router = express.Router();
 const {asyncForEach} = require("../util");
+const uuidv1 = require('uuid/v1');
+const fs = require("fs");
+let mongoose = require('mongoose');
+let ObjectId = mongoose.Schema.Types.ObjectId;
 
 const Photo = require("../schemas/photo");
 const User = require("../schemas/user");
-
-router.get('/', function (req, res, next) {
-  res.send('respond with a resource');
-});
 
 router.get('/init', async function (req, res, next) {
   try {
@@ -96,10 +96,204 @@ router.get("/getalbum/:userid", async function (req, res, next) {
     let photos = await Photo.find({userID}).map(
         ({id, url, likedBy}) => ({id, url, likedBy}));
     res.status(200).json({photos});
+    return;
   } catch (e) {
     console.log(e);
     res.sendStatus(500);
     return;
+  }
+});
+
+router.post("/uploadphoto", async function (req, res, next) {
+  try {
+    let userID;
+
+    if (!req.session || !req.session.userID) {
+      res.sendStatus(401);
+      return;
+    } else {
+      userID = req.session.userID;
+    }
+
+    if (!req.files || !req.files.photo) {
+      res.sendStatus(400);
+      return;
+    }
+
+    let fileName = uuidv1();
+
+    await req.files.photo.mv(
+        `public/uploads/${fileName}.${req.files.photo.name.split('.').pop()}`);
+
+    let photo = new Photo({
+      url: `http://localhost:3002/uploads/${fileName}.${
+          req.files.photo.name.split('.').pop()}`,
+      userID,
+      likedBy: [],
+    });
+    await photo.save();
+
+    res.status(200).json({url: photo.url, id: photo.id});
+
+    return;
+  } catch (e) {
+    console.log(e);
+    res.sendStatus(500);
+    return;
+  }
+});
+
+router.delete("/deletephoto/:photoID", async function (req, res, next) {
+
+  try {
+    if (!req.session || !req.session.userID) {
+      res.sendStatus(401);
+      return;
+    }
+    let userID = req.session.userID;
+
+    let photoID = req.params.photoID;
+    if (!photoID) {
+      res.sendStatus(400)
+      return;
+    }
+
+    let photo = await Photo.findById(photoID);
+    if (!photo) {
+      res.sendStatus(404);
+      return;
+    }
+    if (photo.userID !== userID) {
+      res.sendStatus(403);
+      return;
+    }
+
+    const fileName = photo.url.split('/').pop();
+    fs.unlinkSync(`public/uploads/${fileName}`);
+
+    await Photo.findByIdAndDelete(photoID);
+
+    res.status(200).json("");
+
+  } catch (e) {
+    console.log(e);
+    res.sendStatus(500);
+  }
+
+});
+
+router.put("/updatelike/:photoID", async function (req, res, next) {
+
+  try {
+
+    if (!req.session || !req.session.userID) {
+      res.sendStatus(401);
+      return;
+    }
+    let userID = req.session.userID;
+
+    let photoID = req.params.photoID;
+    if (!photoID) {
+      res.sendStatus(400);
+      return;
+    }
+
+    let photo = await Photo.findById(photoID);
+    if (!photo) {
+      res.sendStatus(404);
+      return;
+    }
+
+    let id = photo.likedBy.find(id => id === userID);
+
+    if (id) {
+      photo.likedBy = photo.likedBy.filter(id => id !== userID);
+    } else {
+      photo.likedBy.push(ObjectId(userID));
+    }
+
+    await photo.save();
+
+    res.status(200).json({likedBy: photo.likedBy});
+    return;
+
+  } catch (e) {
+    console.log(e);
+    res.sendStatus(500);
+  }
+
+});
+
+router.post("/register", async function (req, res, next) {
+  try {
+    const {username, password} = req.body;
+    if (!username || !password) {
+      res.sendStatus(400);
+      return
+    }
+    let user = new User({username, password, friends: []});
+    await user.save();
+    res.sendStatus(200);
+  } catch (e) {
+    console.log(e);
+    res.sendStatus(500);
+  }
+});
+
+router.get("/users", async function (req, res, next) {
+  try {
+    let docs = await User.find();
+    let users = docs.map(({username}) => ({username}));
+    res.status(200).json({users});
+    return;
+  } catch (e) {
+    console.log(e);
+    res.sendStatus(500);
+  }
+});
+
+router.put("/togglefriend/:friendID", async function (req, res, next) {
+  try {
+    if (!req.session || !req.session.userID) {
+      res.sendStatus(401);
+      return;
+    }
+    let userID = req.session.userID;
+
+    let friendID = req.params.friendID;
+    if (!friendID) {
+      res.sendStatus(400);
+      return;
+    }
+
+    if (!await User.findById(friendID)) {
+      res.sendStatus(404)
+      return;
+    }
+
+    let user = await User.findById(userID);
+    if (!user) {
+      res.sendStatus(404);
+      return;
+    }
+
+    let id = user.friends.find(id => id === friendID)
+
+    if (id) {
+      user.friends = user.friends.filter(id => id !== friendID);
+    } else {
+      user.friends.push(friendID);
+    }
+
+    await user.save();
+
+    res.status(200).json({friends: user.friends});
+
+    return;
+
+  } catch (e) {
+    console.log(e);
+    res.sendStatus(500);
   }
 });
 

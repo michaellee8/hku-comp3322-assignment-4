@@ -5,7 +5,7 @@ let ObjectId = mongoose.Schema.Types.ObjectId;
 let userSchema = new Schema({
   username: String,
   password: String,
-  friends: [ObjectId],
+  friends: [String],
 });
 
 module.exports = mongoose.model("User", userSchema);
