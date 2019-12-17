@@ -40,6 +40,10 @@ const displaySlice = createSlice({
     initUserID(state, action: PayloadAction<string>) {
       state.showContent = true;
       state.currentUserID = action.payload;
+    },
+    destroyUserID(state) {
+      state.showContent = false;
+      state.currentUserID = "";
     }
   }
 });
@@ -49,7 +53,8 @@ export const {
   setDrawer,
   setRegisterPopup,
   showError,
-  initUserID
+  initUserID,
+  destroyUserID
 } = displaySlice.actions;
 
 export const displayReducer = displaySlice.reducer;

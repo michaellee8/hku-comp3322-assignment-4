@@ -1,8 +1,8 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { login, LoginError } from "../../api/albumService";
+import { login, LoginError, logout } from "../../api/albumService";
 import { AppThunk } from "./store";
 import { handleError } from "./handleError";
-import { initUserID } from "./displaySlice";
+import { initUserID, destroyUserID } from "./displaySlice";
 import { selectAlbum } from "./albumSelectorSlice";
 
 interface LoginState {
@@ -79,5 +79,15 @@ export const loginUser = (): AppThunk => async (dispatch, getState) => {
     } else {
       dispatch(handleError("cannot login"));
     }
+  }
+};
+
+export const logoutUser = (): AppThunk => async dispatch => {
+  try {
+    const result = await logout();
+    dispatch(destroyUserID());
+  } catch (e) {
+    console.log(e);
+    dispatch(handleError("cannot logout"));
   }
 };
