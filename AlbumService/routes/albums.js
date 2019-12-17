@@ -4,6 +4,7 @@ const {asyncForEach} = require("../util");
 const uuidv1 = require('uuid/v1');
 const fs = require("fs");
 let mongoose = require('mongoose');
+const async = require("async");
 let ObjectId = mongoose.Schema.Types.ObjectId;
 
 const Photo = require("../schemas/photo");
@@ -93,8 +94,17 @@ router.get("/getalbum/:userid", async function (req, res, next) {
         userID = req.session.userID;
       }
     }
-    let photos = await Photo.find({userID}).map(
-        ({id, url, likedBy}) => ({id, url, likedBy}));
+    let photos = async.map(await Photo.find({userID}),
+        async ({id, url, likedBy}) => {
+          const likedByUsers = await async.map(
+              likedBy,
+              async (likedUserID) => {
+                let likedUser = await User.findById(likedUserID);
+                return {username: likedUser.username, userID: likedUser.id};
+              }
+          );
+          return ({id, url, likedBy: likedByUsers});
+        });
     res.status(200).json({photos});
     return;
   } catch (e) {
@@ -209,7 +219,7 @@ router.put("/updatelike/:photoID", async function (req, res, next) {
     if (id) {
       photo.likedBy = photo.likedBy.filter(id => id !== userID);
     } else {
-      photo.likedBy.push(ObjectId(userID));
+      photo.likedBy.push(userID);
     }
 
     await photo.save();
@@ -243,7 +253,7 @@ router.post("/register", async function (req, res, next) {
 router.get("/users", async function (req, res, next) {
   try {
     let docs = await User.find();
-    let users = docs.map(({username}) => ({username}));
+    let users = docs.map(({username, id}) => ({username, userID: id}));
     res.status(200).json({users});
     return;
   } catch (e) {
@@ -267,7 +277,7 @@ router.put("/togglefriend/:friendID", async function (req, res, next) {
     }
 
     if (!await User.findById(friendID)) {
-      res.sendStatus(404)
+      res.sendStatus(404);
       return;
     }
 
@@ -277,7 +287,7 @@ router.put("/togglefriend/:friendID", async function (req, res, next) {
       return;
     }
 
-    let id = user.friends.find(id => id === friendID)
+    let id = user.friends.find(id => id === friendID);
 
     if (id) {
       user.friends = user.friends.filter(id => id !== friendID);
@@ -294,6 +304,41 @@ router.put("/togglefriend/:friendID", async function (req, res, next) {
   } catch (e) {
     console.log(e);
     res.sendStatus(500);
+  }
+});
+
+route.get("/friends", async function (req, res, next) {
+  try {
+    if (!req.session.userID) {
+      // No userID yet, return empty string
+      res.status(401).json("");
+      return;
+    }
+    let userID = req.session.userID;
+    let currentUser = await User.findById(userID);
+    if (currentUser == null) {
+      // User not found
+      res.sendStatus(404);
+      return;
+    }
+    const username = currentUser.username;
+    userID = currentUser.id;
+
+    let friends = [];
+
+    await asyncForEach(currentUser.friends, async (friendId) => {
+      let friendUser = await User.findById(friendId);
+      if (friendUser) {
+        friends.push({username: friendUser.username, userID: friendUser.id});
+      }
+    });
+
+    res.status(200).json({friends});
+    return
+  } catch (e) {
+    console.log(e);
+    res.sendStatus(500);
+    return;
   }
 });
 
