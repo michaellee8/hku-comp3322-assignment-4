@@ -10,6 +10,8 @@ let ObjectId = mongoose.Schema.Types.ObjectId;
 const Photo = require("../schemas/photo");
 const User = require("../schemas/user");
 
+router.use(cors());
+
 router.get('/init', async function (req, res, next) {
   try {
     if (!req.session.userID) {

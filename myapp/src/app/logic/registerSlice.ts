@@ -91,6 +91,7 @@ export const registerNewUser = (): AppThunk => async (dispatch, getState) => {
     dispatch(setMessage("register success"));
     dispatch(resetTextField());
   } catch (e) {
+    console.log(e);
     dispatch(registerFailure());
     dispatch(handleError("cannot register"));
   }

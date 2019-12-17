@@ -29,7 +29,6 @@ app.use(cookieSession({
   maxAge: 60 * 60 * 1000,
 }));
 app.use(fileUpload({}));
-app.use(cors());
 
 app.use('/', albumsRouter);
 

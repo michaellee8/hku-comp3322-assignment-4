@@ -2,6 +2,8 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { login, LoginError } from "../../api/albumService";
 import { AppThunk } from "./store";
 import { handleError } from "./handleError";
+import { initUserID } from "./displaySlice";
+import { selectAlbum } from "./albumSelectorSlice";
 
 interface LoginState {
   username: string;
@@ -63,7 +65,10 @@ export const loginUser = (): AppThunk => async (dispatch, getState) => {
     const result = await login(username, password);
     dispatch(loginSuccess());
     dispatch(resetTextField());
+    dispatch(initUserID(result.userID));
+    dispatch(selectAlbum(result.userID));
   } catch (err) {
+    console.log(err);
     dispatch(loginFailure());
     if (err instanceof LoginError) {
       dispatch(

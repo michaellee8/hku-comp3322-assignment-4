@@ -1,11 +1,13 @@
-import {createSlice, PayloadAction} from "@reduxjs/toolkit";
-import {handleError} from "./handleError";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { handleError } from "./handleError";
 
 interface DisplayState {
   showError: boolean;
   errorMsg: string;
   showDrawer: boolean;
   showRegisterPopup: boolean;
+  currentUserID: string;
+  showContent: boolean;
 }
 
 const initialState: DisplayState = {
@@ -13,6 +15,8 @@ const initialState: DisplayState = {
   showDrawer: false,
   showError: false,
   showRegisterPopup: false,
+  currentUserID: "",
+  showContent: false
 };
 
 const displaySlice = createSlice({
@@ -32,6 +36,10 @@ const displaySlice = createSlice({
     },
     setRegisterPopup(state, action: PayloadAction<boolean>) {
       state.showRegisterPopup = action.payload;
+    },
+    initUserID(state, action: PayloadAction<string>) {
+      state.showContent = true;
+      state.currentUserID = action.payload;
     }
   }
 });
@@ -40,8 +48,8 @@ export const {
   hideError,
   setDrawer,
   setRegisterPopup,
-  showError
+  showError,
+  initUserID
 } = displaySlice.actions;
 
 export const displayReducer = displaySlice.reducer;
-
