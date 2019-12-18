@@ -14,17 +14,20 @@ import {
 } from "../logic/albumPageSlice";
 import { drawerWidth } from "./albumSelector";
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
   appBar: {
     top: "auto",
     bottom: 0,
     width: `calc(100% - ${drawerWidth}px)`,
-    marginLeft: drawerWidth
+    marginLeft: drawerWidth,
+    zIndex: theme.zIndex.modal + 1
   },
   grow: {
     flexGrow: 1
-  }
-});
+  },
+
+  mar: { marginLeft: theme.spacing(1), marginRight: theme.spacing(1) }
+}));
 
 export const BottomBar: React.FC = () => {
   const classes = useStyles();
@@ -116,10 +119,11 @@ export const BottomBar: React.FC = () => {
               variant="contained"
               color="secondary"
               onClick={handleChoosePhoto}
+              className={classes.mar}
             >
               Choose Photo
             </Button>
-            <Typography variant="subtitle1" noWrap>
+            <Typography variant="subtitle1" noWrap className={classes.mar}>
               {acceptedFiles && acceptedFiles[0]
                 ? `${acceptedFiles[0].name} is chosen`
                 : "No photo chosen"}
@@ -129,6 +133,7 @@ export const BottomBar: React.FC = () => {
               variant="contained"
               color="primary"
               onClick={handleUploadPhoto}
+              className={classes.mar}
             >
               Upload
             </Button>
@@ -136,17 +141,18 @@ export const BottomBar: React.FC = () => {
         ) : mode === "delete" || mode === "like" ? (
           <React.Fragment>
             {friendNames && friendNames.length > 0 ? (
-              <Typography variant="subtitle1" noWrap>
+              <Typography variant="subtitle1" noWrap className={classes.mar}>
                 {`${friendNames?.join(", ")} liked this photo!`}
               </Typography>
             ) : null}
             <div className={classes.grow} />
             <Button
               variant="contained"
-              color="primary"
+              color="secondary"
               onClick={mode === "delete" ? handleDelete : handleLike}
+              className={classes.mar}
             >
-              {mode === "delete" ? "Delete" : "Like"}
+              {mode === "delete" ? "Delete" : "Like/Unlike"}
             </Button>
           </React.Fragment>
         ) : null}

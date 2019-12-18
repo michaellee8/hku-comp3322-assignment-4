@@ -98,7 +98,7 @@ export const fetchFriends = (): AppThunk => async dispatch => {
 
 export const selectAlbum = (album: string): AppThunk => async dispatch => {
   dispatch(setSelectedAlbum(album));
-  dispatch(fetchPhotos);
+  dispatch(fetchPhotos());
 };
 
 export const toggleFriendUser = (

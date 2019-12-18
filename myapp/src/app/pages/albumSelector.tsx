@@ -7,9 +7,14 @@ import ListItemText from "@material-ui/core/ListItemText";
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../logic/rootReducer";
-import { setDrawer } from "../logic/displaySlice";
-import { setSelectedAlbum } from "../logic/albumSelectorSlice";
+import {
+  selectAlbum,
+  setSelectedAlbum,
+  toggleFriendUser
+} from "../logic/albumSelectorSlice";
 import { Drawer } from "@material-ui/core";
+import { toggleLikePhoto } from "../logic/albumPageSlice";
+import { toggleFriend } from "../../api/albumService";
 
 export const drawerWidth = 250;
 
@@ -33,17 +38,12 @@ export const AlbumSelector: React.FC = () => {
   const classes = useStyles();
   return (
     <Drawer open variant="permanent">
-      <div
-        className={classes.list}
-        role="presentation"
-        onClick={() => dispatch(setDrawer(false))}
-        onKeyDown={() => dispatch(setDrawer(false))}
-      >
+      <div className={classes.list} role="presentation">
         <List>
           <ListItem
             button
             key={currentUserID}
-            onClick={() => dispatch(setSelectedAlbum(currentUserID))}
+            onClick={() => dispatch(selectAlbum(currentUserID))}
           >
             <ListItemText primary={"My Album"} />
           </ListItem>
@@ -51,11 +51,17 @@ export const AlbumSelector: React.FC = () => {
             <ListItem
               button
               key={user.userID}
-              onClick={() => dispatch(setSelectedAlbum(user.userID))}
+              onClick={() => dispatch(selectAlbum(user.userID))}
             >
               <ListItemText primary={`${user.username}'s Album`} />
               <ListItemSecondaryAction>
-                <Button variant="outlined" color="secondary">
+                <Button
+                  variant="outlined"
+                  color="secondary"
+                  onClick={() => {
+                    dispatch(toggleFriendUser(user.userID));
+                  }}
+                >
                   {user.isFriend ? "Friend" : "Add"}
                 </Button>
               </ListItemSecondaryAction>

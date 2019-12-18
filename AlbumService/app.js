@@ -17,6 +17,7 @@ var albumsRouter = require("./routes/albums");
 
 var app = express();
 
+app.disable('etag');
 app.use(bodyParser.json());
 app.use(logger('dev'));
 app.use(express.json());

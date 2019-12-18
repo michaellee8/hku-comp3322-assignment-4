@@ -94,9 +94,10 @@ router.get("/logout", async function (req, res, next) {
   }
 });
 
-router.get("/getalbum/:userid", async function (req, res, next) {
+router.get("/getalbum/:userID", async function (req, res, next) {
   try {
     let {userID} = req.params;
+
     if (userID === "0") {
       if (!req.session || !req.session.userID) {
         res.sendStatus(401);
@@ -116,6 +117,7 @@ router.get("/getalbum/:userid", async function (req, res, next) {
           );
           return ({id, url, likedBy: likedByUsers});
         });
+    console.log(photos);
     res.status(200).json({photos});
     return;
   } catch (e) {
@@ -144,7 +146,8 @@ router.post("/uploadphoto", async function (req, res, next) {
     let fileName = uuidv1();
 
     await req.files.photo.mv(
-        `./public/uploads/${fileName}.${req.files.photo.name.split('.').pop()}`);
+        `./public/uploads/${fileName}.${req.files.photo.name.split(
+            '.').pop()}`);
 
     let photo = new Photo({
       url: `http://localhost:3002/uploads/${fileName}.${

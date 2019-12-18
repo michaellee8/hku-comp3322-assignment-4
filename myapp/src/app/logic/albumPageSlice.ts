@@ -63,6 +63,7 @@ export const albumPageReducer = albumPageSlice.reducer;
 export const fetchPhotos = (): AppThunk => async (dispatch, getState) => {
   try {
     const { selectedAlbum } = getState().albumSelector;
+    console.log("getAlbum", selectedAlbum);
     dispatch(fetchPhotosStart());
     const result = await getAlbum(selectedAlbum);
     dispatch(fetchPhotosSuccess(result.photos));
@@ -95,6 +96,7 @@ export const deleteAlbumPhoto = (photoID: string): AppThunk => async (
 ) => {
   try {
     const result = await deletePhoto(photoID);
+    dispatch(selectPhoto(""));
     dispatch(fetchPhotos());
   } catch (e) {
     console.log(e);

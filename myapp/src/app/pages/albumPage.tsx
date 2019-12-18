@@ -16,6 +16,14 @@ import UnlikeIcon from "@material-ui/icons/ThumbDown";
 import IconButton from "@material-ui/core/IconButton";
 import { selectPhoto } from "../logic/albumPageSlice";
 import Slide from "@material-ui/core/Slide";
+import { Box } from "@material-ui/core";
+import Card from "@material-ui/core/Card";
+import CardActionArea from "@material-ui/core/CardActionArea";
+import CardActions from "@material-ui/core/CardActions";
+import CardContent from "@material-ui/core/CardContent";
+import CardMedia from "@material-ui/core/CardMedia";
+import Typography from "@material-ui/core/Typography";
+import { drawerWidth } from "./albumSelector";
 
 const useStyles = makeStyles({
   card: {
@@ -23,7 +31,12 @@ const useStyles = makeStyles({
   },
   media: {
     height: 140
-  }
+  },
+  dialogImage: {
+    maxHeight: 400,
+    maxWidth: 500
+  },
+  panel: { width: `calc(100% - ${drawerWidth}px)`, marginLeft: drawerWidth }
 });
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -31,6 +44,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 });
 
 export const AlbumPage: React.FC = () => {
+  const classes = useStyles();
   const dispatch = useDispatch();
   const getLikeHandler = (photoID: string) => () =>
     dispatch(toggleLikePhoto(photoID));
@@ -50,51 +64,67 @@ export const AlbumPage: React.FC = () => {
     (state: RootState) => state.display.currentUserID
   );
   const handleCloseDialog = () => dispatch(selectPhoto(""));
+  if (!photos || !Array.isArray(photos)) {
+    return null;
+  }
   return (
     <React.Fragment>
-      <GridList cellHeight={250}>
+      <Box
+        display={"flex"}
+        flexDirection={"row"}
+        flexWrap={"wrap"}
+        className={classes.panel}
+      >
         {photos.map(photo => (
-          <GridListTile
-            key={photo.id}
-            onClick={() => dispatch(selectPhoto(photo.id))}
-          >
-            <img src={photo.url} />
-            <GridListTileBar
-              subtitle={
-                <span>
+          <Card className={classes.card}>
+            <CardActionArea onClick={() => dispatch(selectPhoto(photo.id))}>
+              {/*<CardMedia className={classes.media} image={photo.url} />*/}
+              <img src={photo.url} className={classes.media} />
+              <CardContent>
+                <Typography variant="body2" color="textSecondary" component="p">
                   {photo.likedBy && photo.likedBy.length > 0
                     ? `${photo.likedBy
                         .map(l => l.username)
                         .join(", ")} liked this photo!`
                     : null}
-                </span>
-              }
-              actionIcon={
-                <IconButton
-                  onClick={
-                    isOwnAlbum
-                      ? getDeleteHandler(photo.id)
-                      : photo.likedBy.find(u => u.userID === currentUserID)
-                      ? getLikeHandler(photo.id)
-                      : getLikeHandler(photo.id)
-                  }
-                >
-                  {isOwnAlbum ? (
-                    <DeleteIcon />
-                  ) : photo.likedBy.find(u => u.userID === currentUserID) ? (
-                    <UnlikeIcon />
-                  ) : (
-                    <LikeIcon />
-                  )}
-                </IconButton>
-              }
-            />
-          </GridListTile>
+                </Typography>
+              </CardContent>
+            </CardActionArea>
+            <CardActions>
+              <IconButton
+                onClick={
+                  isOwnAlbum
+                    ? getDeleteHandler(photo.id)
+                    : photo.likedBy.find(u => u.userID === currentUserID)
+                    ? getLikeHandler(photo.id)
+                    : getLikeHandler(photo.id)
+                }
+              >
+                {isOwnAlbum ? (
+                  <DeleteIcon />
+                ) : photo.likedBy.find(u => u.userID === currentUserID) ? (
+                  <UnlikeIcon />
+                ) : (
+                  <LikeIcon />
+                )}
+                {isOwnAlbum ? (
+                  <span>Delete</span>
+                ) : photo.likedBy.find(u => u.userID === currentUserID) ? (
+                  <span>Unlike</span>
+                ) : (
+                  <span>Like</span>
+                )}
+              </IconButton>
+            </CardActions>
+          </Card>
         ))}
-      </GridList>
+      </Box>
       <Dialog open={isDialogOpen} onClose={handleCloseDialog}>
         <DialogContent>
-          <img src={photos.find(p => p.id === selectedPhoto)?.url} />
+          <img
+            src={photos.find(p => p.id === selectedPhoto)?.url}
+            className={classes.dialogImage}
+          />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseDialog} color="primary">

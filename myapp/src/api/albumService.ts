@@ -130,6 +130,6 @@ export interface GetFriendsResult {
 }
 
 export async function getFriends(): Promise<GetFriendsResult> {
-  const res = await axios.get("/friends");
+  const res = await albumService.get("/friends");
   return res.data;
 }

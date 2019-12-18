@@ -3,7 +3,8 @@ import { login, LoginError, logout } from "../../api/albumService";
 import { AppThunk } from "./store";
 import { handleError } from "./handleError";
 import { initUser, destroyUser } from "./displaySlice";
-import { selectAlbum } from "./albumSelectorSlice";
+import { fetchFriends, fetchUsers, selectAlbum } from "./albumSelectorSlice";
+import { fetchPhotos } from "./albumPageSlice";
 
 interface LoginState {
   username: string;
@@ -67,6 +68,8 @@ export const loginUser = (): AppThunk => async (dispatch, getState) => {
     dispatch(resetTextField());
     dispatch(initUser({ userID: result.userID, username: username }));
     dispatch(selectAlbum(result.userID));
+    dispatch(fetchFriends());
+    dispatch(fetchUsers());
   } catch (err) {
     console.log(err);
     dispatch(loginFailure());

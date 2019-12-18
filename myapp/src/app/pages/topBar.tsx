@@ -16,7 +16,8 @@ import { drawerWidth } from "./albumSelector";
 const useStyles = makeStyles(theme => ({
   grow: { flexGrow: 1 },
   textField: { backgroundColor: fade(theme.palette.common.white, 0.15) },
-  appBar: { width: `calc(100% - ${drawerWidth}px)`, marginLeft: drawerWidth }
+  appBar: { width: `calc(100% - ${drawerWidth}px)`, marginLeft: drawerWidth },
+  mar: { marginLeft: theme.spacing(1), marginRight: theme.spacing(1) }
 }));
 
 export const TopBar: React.FC = () => {
@@ -53,6 +54,7 @@ export const TopBar: React.FC = () => {
               color="secondary"
               onChange={handleUsername}
               classes={{ root: classes.textField }}
+              className={classes.mar}
             />
             <TextField
               label="Password"
@@ -61,27 +63,35 @@ export const TopBar: React.FC = () => {
               type="password"
               onChange={handlePassword}
               classes={{ root: classes.textField }}
+              className={classes.mar}
             />
-            <Button variant="contained" color="secondary" onClick={handleLogin}>
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={handleLogin}
+              className={classes.mar}
+            >
               Login
             </Button>
             <Button
               variant="contained"
               color="secondary"
               onClick={handleOpenRegister}
+              className={classes.mar}
             >
               Register
             </Button>
           </React.Fragment>
         ) : (
           <React.Fragment>
-            <Typography variant="subtitle1" noWrap>
+            <Typography variant="subtitle1" noWrap className={classes.mar}>
               {`Hello ${currentUsername}!`}
             </Typography>
             <Button
               variant="contained"
               color="secondary"
               onClick={handleLogout}
+              className={classes.mar}
             >
               Logout
             </Button>
