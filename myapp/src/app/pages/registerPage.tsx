@@ -1,5 +1,4 @@
 import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../logic/rootReducer";
@@ -8,8 +7,6 @@ import {
   setUsername,
   setPassword,
   setRePassword,
-  setMessage,
-  setLoading,
   registerNewUser
 } from "../logic/registerSlice";
 import Dialog from "@material-ui/core/Dialog";
@@ -19,9 +16,19 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import TextField from "@material-ui/core/TextField";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContentText from "@material-ui/core/DialogContentText";
+import makeStyles from "@material-ui/core/styles/makeStyles";
+
+const useStyles = makeStyles(theme => ({
+  dialogContent: {
+    flexDirection: "column",
+    display: "flex"
+  },
+  textField: { marginTop: theme.spacing(2), marginBottom: theme.spacing(2) }
+}));
 
 export const RegisterPage: React.FC = () => {
   const dispatch = useDispatch();
+  const classes = useStyles();
   const { password, username, rePassword, message, loading } = useSelector(
     (state: RootState) => state.register
   );
@@ -40,24 +47,29 @@ export const RegisterPage: React.FC = () => {
   return (
     <Dialog open={open}>
       <DialogTitle>Register</DialogTitle>
-      <DialogContent>
+      <DialogContent className={classes.dialogContent}>
         <TextField
           label="Username"
           variant="outlined"
           value={username}
           onChange={handleUsername}
+          className={classes.textField}
         />
         <TextField
           label="Password"
           variant="outlined"
           value={password}
           onChange={handlePassword}
+          type="password"
+          className={classes.textField}
         />
         <TextField
           label="Re-enter Password"
           variant="outlined"
           value={rePassword}
           onChange={handleRePassword}
+          type="password"
+          className={classes.textField}
         />
         <DialogContentText>{message}</DialogContentText>
       </DialogContent>

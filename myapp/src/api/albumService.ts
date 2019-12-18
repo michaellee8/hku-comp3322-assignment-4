@@ -44,9 +44,16 @@ export async function login(
   username: string,
   password: string
 ): Promise<LoginResult> {
-  const res = await albumService.post("/login", { username, password });
-
-  return res.data;
+  try {
+    const res = await albumService.post("/login", { username, password });
+    return res.data;
+  } catch (e) {
+    if (e.response && e.response.status && e.response.status === 401) {
+      throw new LoginError();
+    } else {
+      throw e;
+    }
+  }
 }
 
 export async function logout(): Promise<void> {

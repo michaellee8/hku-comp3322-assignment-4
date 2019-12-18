@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { login, LoginError, logout } from "../../api/albumService";
 import { AppThunk } from "./store";
 import { handleError } from "./handleError";
-import { initUserID, destroyUserID } from "./displaySlice";
+import { initUser, destroyUser } from "./displaySlice";
 import { selectAlbum } from "./albumSelectorSlice";
 
 interface LoginState {
@@ -65,7 +65,7 @@ export const loginUser = (): AppThunk => async (dispatch, getState) => {
     const result = await login(username, password);
     dispatch(loginSuccess());
     dispatch(resetTextField());
-    dispatch(initUserID(result.userID));
+    dispatch(initUser({ userID: result.userID, username: username }));
     dispatch(selectAlbum(result.userID));
   } catch (err) {
     console.log(err);
@@ -85,7 +85,7 @@ export const loginUser = (): AppThunk => async (dispatch, getState) => {
 export const logoutUser = (): AppThunk => async dispatch => {
   try {
     const result = await logout();
-    dispatch(destroyUserID());
+    dispatch(destroyUser());
   } catch (e) {
     console.log(e);
     dispatch(handleError("cannot logout"));

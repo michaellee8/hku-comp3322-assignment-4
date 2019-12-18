@@ -7,6 +7,7 @@ interface DisplayState {
   showDrawer: boolean;
   showRegisterPopup: boolean;
   currentUserID: string;
+  currentUsername: string;
   showContent: boolean;
 }
 
@@ -16,6 +17,7 @@ const initialState: DisplayState = {
   showError: false,
   showRegisterPopup: false,
   currentUserID: "",
+  currentUsername: "",
   showContent: false
 };
 
@@ -28,7 +30,7 @@ const displaySlice = createSlice({
       state.errorMsg = action.payload;
     },
     hideError(state) {
-      state.showDrawer = false;
+      state.showError = false;
       state.errorMsg = "";
     },
     setDrawer(state, action: PayloadAction<boolean>) {
@@ -37,13 +39,18 @@ const displaySlice = createSlice({
     setRegisterPopup(state, action: PayloadAction<boolean>) {
       state.showRegisterPopup = action.payload;
     },
-    initUserID(state, action: PayloadAction<string>) {
+    initUser(
+      state,
+      action: PayloadAction<{ username: string; userID: string }>
+    ) {
       state.showContent = true;
-      state.currentUserID = action.payload;
+      state.currentUserID = action.payload.userID;
+      state.currentUsername = action.payload.username;
     },
-    destroyUserID(state) {
+    destroyUser(state) {
       state.showContent = false;
       state.currentUserID = "";
+      state.currentUsername = "";
     }
   }
 });
@@ -53,8 +60,8 @@ export const {
   setDrawer,
   setRegisterPopup,
   showError,
-  initUserID,
-  destroyUserID
+  initUser,
+  destroyUser
 } = displaySlice.actions;
 
 export const displayReducer = displaySlice.reducer;

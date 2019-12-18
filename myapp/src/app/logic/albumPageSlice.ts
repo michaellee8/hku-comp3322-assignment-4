@@ -3,7 +3,8 @@ import {
   getAlbum,
   Photo,
   updateLike,
-  uploadPhoto
+  uploadPhoto,
+  deletePhoto
 } from "../../api/albumService";
 import { AppThunk } from "./store";
 import { handleError } from "./handleError";
@@ -88,7 +89,7 @@ export const uploadAlbumPhoto = (photo: File): AppThunk => async (
   }
 };
 
-export const deletePhoto = (photoID: string): AppThunk => async (
+export const deleteAlbumPhoto = (photoID: string): AppThunk => async (
   dispatch,
   getState
 ) => {

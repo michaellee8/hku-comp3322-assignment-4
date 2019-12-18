@@ -5,12 +5,21 @@ const uuidv1 = require('uuid/v1');
 const fs = require("fs");
 let mongoose = require('mongoose');
 const async = require("async");
+var cors = require("cors");
 let ObjectId = mongoose.Schema.Types.ObjectId;
 
 const Photo = require("../schemas/photo");
 const User = require("../schemas/user");
 
-router.use(cors());
+router.use(cors({
+  origin: 'http://localhost:3000',
+  credentials: true
+}));
+
+router.options('*', cors({
+  origin: 'http://localhost:3000',
+  credentials: true
+}));
 
 router.get('/init', async function (req, res, next) {
   try {
@@ -135,7 +144,7 @@ router.post("/uploadphoto", async function (req, res, next) {
     let fileName = uuidv1();
 
     await req.files.photo.mv(
-        `public/uploads/${fileName}.${req.files.photo.name.split('.').pop()}`);
+        `./public/uploads/${fileName}.${req.files.photo.name.split('.').pop()}`);
 
     let photo = new Photo({
       url: `http://localhost:3002/uploads/${fileName}.${
@@ -309,7 +318,7 @@ router.put("/togglefriend/:friendID", async function (req, res, next) {
   }
 });
 
-route.get("/friends", async function (req, res, next) {
+router.get("/friends", async function (req, res, next) {
   try {
     if (!req.session.userID) {
       // No userID yet, return empty string

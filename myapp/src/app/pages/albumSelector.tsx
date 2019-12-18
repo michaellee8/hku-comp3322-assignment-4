@@ -9,10 +9,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../logic/rootReducer";
 import { setDrawer } from "../logic/displaySlice";
 import { setSelectedAlbum } from "../logic/albumSelectorSlice";
-import ContactIcon from "@material-ui/icons/Contacts";
 import { Drawer } from "@material-ui/core";
 
-const drawerWidth = 250;
+export const drawerWidth = 250;
 
 const useStyles = makeStyles({
   list: {
@@ -56,11 +55,7 @@ export const AlbumSelector: React.FC = () => {
             >
               <ListItemText primary={`${user.username}'s Album`} />
               <ListItemSecondaryAction>
-                <Button
-                  variant="outlined"
-                  color="secondary"
-                  startIcon={<ContactIcon />}
-                >
+                <Button variant="outlined" color="secondary">
                   {user.isFriend ? "Friend" : "Add"}
                 </Button>
               </ListItemSecondaryAction>
