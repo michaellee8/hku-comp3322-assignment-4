@@ -105,7 +105,7 @@ router.get("/getalbum/:userid", async function (req, res, next) {
         userID = req.session.userID;
       }
     }
-    let photos = async.map(await Photo.find({userID}),
+    let photos = await async.map(await Photo.find({userID}),
         async ({id, url, likedBy}) => {
           const likedByUsers = await async.map(
               likedBy,
