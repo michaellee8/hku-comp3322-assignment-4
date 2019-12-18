@@ -25,3 +25,4 @@ will give you a MongoDB instance at 27017 and a MongoDB Express explorer instanc
 CSS rules are placed in `makeStyle` calls in React components in `app/pages`.
 - This app does not use React's local state for state management, instead it uses Redux with Redux 
 Toolkit. State management logic are therefore stored separately in `app/logic`.
+- Some APIs specified in the requirement is modified to improve usability.
