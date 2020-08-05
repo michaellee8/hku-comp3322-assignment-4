@@ -13,7 +13,7 @@
     "cors": "^2.8.5",
     "debug": "~2.6.9",
     "express": "~4.16.1",
-    "express-fileupload": "^1.1.6",
+    "express-fileupload": "^1.1.9",
     "mongodb": "^3.4.0",
     "mongoose": "^5.8.1",
     "monk": "^7.1.1",
